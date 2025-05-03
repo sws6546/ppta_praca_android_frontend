@@ -35,6 +35,10 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        if (auth.checkAuthFromLocalStorage(this)) {
+            changeContentViewToHome();
+        }
     }
 
     public void onRegister(View v) {
@@ -67,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         else {
             changeContentViewToHome();
         }
+        auth.saveAuthToLocalStorage(this);
     }
 
     public void changeContentViewToHome() {
@@ -75,10 +80,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         setContentView(R.layout.homepage_layout);
+        ((TextView) findViewById(R.id.headerUname)).setText(auth.getUser().username);
     }
 
     public void onLogout(View v) {
         auth.logout();
+        auth.clearLocalStorage(this);
         setContentView(R.layout.activity_main);
     }
 }

@@ -1,11 +1,16 @@
 package com.example.messanger;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import java.io.InputStream;
 import java.util.AbstractMap.SimpleEntry;
 
 public class AuthManager {
     AuthManager(HttpClientManager httpClientManager) {
         this.httpClient = httpClientManager;
     }
+
     private HttpClientManager httpClient;
     private User user = new User(null, null);
     private boolean userLoggedStatus = false;
@@ -73,5 +78,38 @@ public class AuthManager {
      */
     public String checkAuthToken() {
         return httpClient.checkAuthorizationToken(this.user.token);
+    }
+
+    public Boolean checkAuthFromLocalStorage(Context context) {
+        SharedPreferences sp = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+        String token = sp.getString("token", "");
+        String uname = sp.getString("username", "");
+
+        if(uname.isEmpty() || token.isEmpty()) return false;
+
+        String err = httpClient.checkAuthorizationToken(token);
+        if(!err.isEmpty()) return false;
+
+        this.user = new User(uname, token);
+        this.userLoggedStatus = true;
+        return true;
+    }
+
+    /**
+     * Returned string is for error. If its no error, returns "".
+     */
+    public String saveAuthToLocalStorage(Context context) {
+        if (!this.userLoggedStatus) return "User not logged";
+        SharedPreferences sp = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+        sp.edit()
+                .putString("username", this.user.username)
+                .putString("token", this.user.token)
+                .apply();
+        return "";
+    }
+
+    public void clearLocalStorage(Context context) {
+        SharedPreferences sp = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+        sp.edit().clear().apply();
     }
 }

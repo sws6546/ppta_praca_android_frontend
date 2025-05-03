@@ -12,6 +12,11 @@ composeThemeAdapter = "1.2.1"
 jacksonAnnotations = "3.0-rc3"
 jacksonCore = "2.19.0"
 jacksonDatabind = "2.19.0"
+kotlin = "2.1.20"
+coreKtx = "1.16.0"
+ktorClientCore = "3.1.2"
+ktorClientCio = "3.1.2"
+ktorClientWebsockets = "3.1.2"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -26,7 +31,12 @@ compose-theme-adapter = { group = "com.google.android.material", name = "compose
 jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version.ref = "jacksonAnnotations" }
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jacksonCore" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jacksonDatabind" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktorClientCore" }
+ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktorClientCio" }
+ktor-client-websockets = { group = "io.ktor", name = "ktor-client-websockets", version.ref = "ktorClientWebsockets" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
