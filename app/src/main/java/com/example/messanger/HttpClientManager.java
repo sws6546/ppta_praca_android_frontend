@@ -15,7 +15,12 @@ import okhttp3.Response;
 public class HttpClientManager {
     private OkHttpClient client = new OkHttpClient();
     private static final MediaType JSON = MediaType.get("application/json");
+
+    public String getBackendUrl() {
+        return backendUrl;
+    }
     private String backendUrl = "https://hen-adapting-penguin.ngrok-free.app/";
+
     private ObjectMapper mapper = new ObjectMapper();
 
     private boolean haveConnection = false;
@@ -102,6 +107,33 @@ public class HttpClientManager {
         }
         catch (Exception e) {
             return e.toString();
+        }
+    }
+
+    public String getUsernameById(String userId) {
+        Request request = new Request.Builder()
+                .url(backendUrl + "users/getById/" + userId)
+                .build();
+        try(Response response = client.newCall(request).execute()) {
+            String json = response.body().string();
+            Map<String, String> res = mapper.readValue(json, Map.class);
+            return res.get("Name");
+        }
+        catch (Exception e) {
+            return "";
+        }
+    }
+    public String getUserIdByUsername(String username) {
+        Request request = new Request.Builder()
+                .url(backendUrl + "users/getByName/" + username)
+                .build();
+        try(Response response = client.newCall(request).execute()) {
+            String json = response.body().string();
+            Map<String, String> res = mapper.readValue(json, Map.class);
+            return res.get("ID");
+        }
+        catch (Exception e) {
+            return "";
         }
     }
 }

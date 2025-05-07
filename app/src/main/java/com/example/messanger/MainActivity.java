@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -15,10 +17,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     HttpClientManager httpClientManager;
     AuthManager auth;
+    WebSocketManager webSocketManager;
+    static Boolean isWebSocketConnected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (auth.checkAuthFromLocalStorage(this)) {
             changeContentViewToHome();
+            webSocketManager = new WebSocketManager();
+            webSocketManager.connect(auth);
+            readNotification_Thread();
         }
     }
 
@@ -69,9 +78,12 @@ public class MainActivity extends AppCompatActivity {
             loginErrorTextView.setText(err);
         }
         else {
+            auth.saveAuthToLocalStorage(this);
             changeContentViewToHome();
+            webSocketManager = new WebSocketManager();
+            webSocketManager.connect(auth);
+            readNotification_Thread();
         }
-        auth.saveAuthToLocalStorage(this);
     }
 
     public void changeContentViewToHome() {
@@ -87,5 +99,47 @@ public class MainActivity extends AppCompatActivity {
         auth.logout();
         auth.clearLocalStorage(this);
         setContentView(R.layout.activity_main);
+        webSocketManager = null;
+    }
+
+    public void readNotification_Thread() {
+        Thread notificationListener = new Thread(() -> {
+            MessagesManager messagesManager = new MessagesManager();
+            List<Message> messages = messagesManager.getMessagesList();
+            while(MainActivity.isWebSocketConnected) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Log.d("myTag", e.toString());
+                }
+                List<Message> newMessages = messagesManager.getMessagesList();
+                if (!messages.equals(newMessages)) {
+                    runOnUiThread(() -> {
+                        ((LinearLayout) findViewById(R.id.msgNotificationsContainer)).removeAllViews();
+                        for(Message msg : newMessages) {
+                            addMessageNotification(msg.sender);
+                        }
+                    });
+                    messages = List.copyOf(newMessages);
+                }
+            }
+        });
+        notificationListener.start();
+    }
+
+    public void addMessageNotification(String senderName) {
+        TextView newNotification = new TextView(this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(10, 10, 10, 10);
+        newNotification.setLayoutParams(params);
+
+
+        newNotification.setText(senderName);
+        newNotification.setBackgroundColor(0xFFB0C6FF);
+        newNotification.setPadding(16,16,16,16);
+        ((LinearLayout) findViewById(R.id.msgNotificationsContainer)).addView(newNotification);
     }
 }
