@@ -3,7 +3,6 @@ package com.example.messanger;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.io.InputStream;
 import java.util.AbstractMap.SimpleEntry;
 
 public class AuthManager {

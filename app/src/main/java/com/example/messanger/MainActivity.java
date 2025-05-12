@@ -1,11 +1,9 @@
 package com.example.messanger;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -92,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         setContentView(R.layout.homepage_layout);
-        ((TextView) findViewById(R.id.headerUname)).setText(auth.getUser().username);
+        ((TextView) findViewById(R.id.chatterName)).setText(auth.getUser().username);
     }
 
     public void onLogout(View v) {
