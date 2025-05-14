@@ -1,10 +1,14 @@
 package com.example.messanger;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -15,7 +19,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +30,10 @@ public class MainActivity extends AppCompatActivity {
     AuthManager auth;
     WebSocketManager webSocketManager;
     static Boolean isWebSocketConnected = false;
+
+    Map<String, String> existingUsers = null;
+    ChatManager chatManager;
+    Activity uiActivity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             webSocketManager = new WebSocketManager();
             webSocketManager.connect(auth);
             readNotification_Thread();
+            setExistingUsers();
         }
     }
 
@@ -81,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
             webSocketManager = new WebSocketManager();
             webSocketManager.connect(auth);
             readNotification_Thread();
+            setExistingUsers();
         }
     }
 
@@ -139,5 +152,44 @@ public class MainActivity extends AppCompatActivity {
         newNotification.setBackgroundColor(0xFFB0C6FF);
         newNotification.setPadding(16,16,16,16);
         ((LinearLayout) findViewById(R.id.msgNotificationsContainer)).addView(newNotification);
+    }
+
+    public void setExistingUsers() {
+        Map<String, String> tempAllUsers = httpClientManager.getAllUsers();
+        Map<String, String> allUsers = new LinkedHashMap<String, String>();
+        allUsers.put("Select user", "");
+        allUsers.putAll(tempAllUsers);
+
+        Spinner allUsersSpinner = findViewById(R.id.allExistingUsers);
+        allUsersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedUser = parent.getItemAtPosition(position).toString();
+                if(!selectedUser.equals("Select user")){
+                    chatManager = new ChatManager(
+                            selectedUser,
+                            allUsers.get(selectedUser),
+                            auth,
+                            httpClientManager,
+                            uiActivity);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.d("myTag", "No user is selected");
+            }
+        });
+
+        allUsersSpinner.setAdapter(new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                allUsers.keySet().toArray()
+        ));
+    }
+
+    public void backToHomepage(View v) {
+        setContentView(R.layout.homepage_layout);
+        setExistingUsers();
     }
 }

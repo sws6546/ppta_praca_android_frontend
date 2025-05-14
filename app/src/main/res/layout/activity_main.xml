@@ -46,7 +46,8 @@
                 android:id="@+id/registerPwd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/anta" />
+                android:fontFamily="@font/anta"
+                android:password="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -99,13 +100,14 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username">
+            android:hint="Password">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/loginPwd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/anta" />
+                android:fontFamily="@font/anta"
+                android:password="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

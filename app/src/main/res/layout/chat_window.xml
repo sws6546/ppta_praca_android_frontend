@@ -22,7 +22,7 @@
                 android:layout_weight="0"
                 android:backgroundTint="@color/material_dynamic_tertiary30"
                 android:fontFamily="@font/anta"
-                android:onClick="onLogout"
+                android:onClick="backToHomepage"
                 android:text="Back"
                 android:textColor="@color/material_dynamic_primary70" />
 
@@ -32,7 +32,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/anta"
-                android:text="Chatting with "
                 android:textAlignment="textEnd"
                 android:textColor="@color/material_dynamic_primary80"
                 android:textSize="20sp" />
@@ -65,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="@integer/material_motion_duration_long_1"
-                android:hint="Username">
+                android:hint="message">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/registerUname"

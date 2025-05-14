@@ -1,7 +1,12 @@
 package com.example.messanger;
 
+import android.util.Log;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.AbstractMap.SimpleEntry;
@@ -134,6 +139,29 @@ public class HttpClientManager {
         }
         catch (Exception e) {
             return "";
+        }
+    }
+
+    /**
+     * Returns map of users <username, userId>
+     */
+    public Map<String, String> getAllUsers() {
+        Request request = new Request.Builder()
+                .url(backendUrl + "users/all")
+                .build();
+
+        try(Response response = client.newCall(request).execute()) {
+            String json = response.body().string();
+            List<Map<String, String>> res = mapper.readValue(json, new TypeReference<List<Map<String, String>>>() {});
+            Map<String, String> allUsers = new HashMap<String, String>();
+            res.forEach((usr) -> {
+                allUsers.put(usr.get("Name"), usr.get("ID"));
+            });
+            return allUsers;
+        }
+        catch (Exception e) {
+            Log.d("myTag", e.toString());
+            return new HashMap<>();
         }
     }
 }

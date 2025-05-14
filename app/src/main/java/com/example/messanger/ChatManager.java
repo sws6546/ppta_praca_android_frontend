@@ -1,6 +1,7 @@
 package com.example.messanger;
 
 import android.app.Activity;
+import android.view.View;
 import android.widget.TextView;
 
 public class ChatManager {
@@ -19,7 +20,7 @@ public class ChatManager {
         this.uiActivity = activity;
 
         openChatWithChatter();
-        ((TextView) uiActivity.findViewById(R.id.chatterName)).setText("Chatting with " + chatterName);
+        ((TextView) uiActivity.findViewById(R.id.chatterName)).setText(chatterName);
 
 
     }

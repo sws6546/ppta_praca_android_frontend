@@ -3,11 +3,13 @@ package com.example.messanger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 import java.util.AbstractMap;
+import java.util.Map;
 
 public class HttpTests {
 
@@ -82,5 +84,13 @@ public class HttpTests {
                 testingCredential,
                 httpClient.getUsernameById(httpClient.getUserIdByUsername(testingCredential))
         );
+    }
+
+    @Test
+    public void HTTP_checkGetAllUsers() {
+        HttpClientManager httpClient = new HttpClientManager();
+        Map<String, String> usrs = httpClient.getAllUsers();
+        System.out.println(usrs.toString());
+        assertNotNull(usrs);
     }
 }
