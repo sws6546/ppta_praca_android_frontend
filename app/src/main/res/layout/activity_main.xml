@@ -30,7 +30,7 @@
             android:hint="Username">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/registerUname"
+                android:id="@+id/messageContextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/anta" />

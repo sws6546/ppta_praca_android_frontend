@@ -1,7 +1,5 @@
 package com.example.messanger;
 
-import androidx.annotation.NonNull;
-
 public class User {
     User(String username, String token) {
         this.username = username;

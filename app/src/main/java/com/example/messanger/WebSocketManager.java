@@ -30,7 +30,7 @@ public class WebSocketManager {
         if(!auth.isUserLogged()) return "User not logged";
 
         Request request = new Request.Builder()
-                .url("wss://hen-adapting-penguin.ngrok-free.app/ws")
+                .url(LocalEnv.backendUrl + "ws")
                 .header("Authorization", "Bearer " + auth.getUser().token)
                 .build();
 
@@ -69,5 +69,19 @@ public class WebSocketManager {
 
         MainActivity.isWebSocketConnected = true;
         return "";
+    }
+
+    /**
+     * Returned string is for error. If its no error, returns "".
+     */
+    public String sendMessage(String reciverId, String messageContent) {
+        try {
+            String formattedJsonString = String.format("{\"reciverId\":\"%s\",\"messageContent\":\"%s\"}", reciverId, messageContent);
+            this.webSocket.send(formattedJsonString);
+            return "";
+        }
+        catch (Exception e) {
+            return e.toString();
+        }
     }
 }

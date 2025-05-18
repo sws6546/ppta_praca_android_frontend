@@ -38,16 +38,16 @@
                 android:textColor="@color/material_dynamic_primary70" />
         </LinearLayout>
 
+        <Spinner
+            android:id="@+id/allExistingUsers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <LinearLayout
             android:id="@+id/msgNotificationsContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
-            <Spinner
-                android:id="@+id/allExistingUsers"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
         </LinearLayout>
     </LinearLayout>

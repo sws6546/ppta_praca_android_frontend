@@ -24,7 +24,7 @@ public class HttpClientManager {
     public String getBackendUrl() {
         return backendUrl;
     }
-    private String backendUrl = "https://hen-adapting-penguin.ngrok-free.app/";
+    private String backendUrl = LocalEnv.backendUrl;
 
     private ObjectMapper mapper = new ObjectMapper();
 

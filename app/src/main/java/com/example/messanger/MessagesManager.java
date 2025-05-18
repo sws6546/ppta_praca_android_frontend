@@ -24,6 +24,19 @@ public class MessagesManager {
         return messagesWithThatUser;
     }
 
+    public List<String> getAllUsersThatHaveMessagesWith(AuthManager auth) {
+        List<String> users = new ArrayList<String>();
+        for(Message msg : messagesList) {
+            if (!msg.sender.equals(auth.getUser().username) && !users.contains(msg.sender)){
+                users.add(msg.sender);
+            }
+            if (!msg.receiver.equals(auth.getUser().username) && !users.contains(msg.receiver)){
+                users.add(msg.receiver);
+            }
+        }
+        return users;
+    }
+
     public void clear() {
         messagesList.clear();
     }

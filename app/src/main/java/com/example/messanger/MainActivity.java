@@ -13,13 +13,13 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         httpClientManager = new HttpClientManager();
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onRegister(View v) {
-        String username = ((TextInputEditText) findViewById(R.id.registerUname)).getText().toString();
+        String username = ((TextInputEditText) findViewById(R.id.messageContextInput)).getText().toString();
         String password = ((TextInputEditText) findViewById(R.id.registerPwd)).getText().toString();
         TextView registerErrorTextView = findViewById(R.id.registerErrTextView);
 
@@ -116,22 +117,31 @@ public class MainActivity extends AppCompatActivity {
     public void readNotification_Thread() {
         Thread notificationListener = new Thread(() -> {
             MessagesManager messagesManager = new MessagesManager();
-            List<Message> messages = messagesManager.getMessagesList();
+            List<String> users = List.copyOf(messagesManager.getAllUsersThatHaveMessagesWith(auth));
+            for(String usr : users) {
+                addMessageNotification(usr);
+            }
+
             while(MainActivity.isWebSocketConnected) {
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     Log.d("myTag", e.toString());
                 }
-                List<Message> newMessages = messagesManager.getMessagesList();
-                if (!messages.equals(newMessages)) {
-                    runOnUiThread(() -> {
-                        ((LinearLayout) findViewById(R.id.msgNotificationsContainer)).removeAllViews();
-                        for(Message msg : newMessages) {
-                            addMessageNotification(msg.sender);
-                        }
-                    });
-                    messages = List.copyOf(newMessages);
+                try {
+                    List<String> newUsers = messagesManager.getAllUsersThatHaveMessagesWith(auth);
+                    if (!users.equals(newUsers)) {
+                        runOnUiThread(() -> {
+                            ((LinearLayout) findViewById(R.id.msgNotificationsContainer)).removeAllViews();
+                            for(String usr : newUsers) {
+                                addMessageNotification(usr);
+                            }
+                        });
+                        users = List.copyOf(newUsers);
+                    }
+                }
+                catch (Exception e) {
+                    Log.d("myTag", e.toString());
                 }
             }
         });
@@ -152,6 +162,15 @@ public class MainActivity extends AppCompatActivity {
         newNotification.setBackgroundColor(0xFFB0C6FF);
         newNotification.setPadding(16,16,16,16);
         ((LinearLayout) findViewById(R.id.msgNotificationsContainer)).addView(newNotification);
+        newNotification.setOnClickListener(v -> {
+            chatManager = new ChatManager(
+                    senderName,
+                    httpClientManager.getUserIdByUsername(senderName),
+                    auth,
+                    httpClientManager,
+                    uiActivity,
+                    webSocketManager);
+        });
     }
 
     public void setExistingUsers() {
@@ -159,6 +178,8 @@ public class MainActivity extends AppCompatActivity {
         Map<String, String> allUsers = new LinkedHashMap<String, String>();
         allUsers.put("Select user", "");
         allUsers.putAll(tempAllUsers);
+
+        allUsers.remove(auth.getUser().username);
 
         Spinner allUsersSpinner = findViewById(R.id.allExistingUsers);
         allUsersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -171,7 +192,8 @@ public class MainActivity extends AppCompatActivity {
                             allUsers.get(selectedUser),
                             auth,
                             httpClientManager,
-                            uiActivity);
+                            uiActivity,
+                            webSocketManager);
                 }
             }
 
@@ -191,5 +213,8 @@ public class MainActivity extends AppCompatActivity {
     public void backToHomepage(View v) {
         setContentView(R.layout.homepage_layout);
         setExistingUsers();
+        MainActivity.isWebSocketConnected = true;
+        ChatManager.shouldListenMessages = false;
+        readNotification_Thread();
     }
 }
